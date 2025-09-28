@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>STR Announcements - Demo</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <h1>STR Announcements</h1>
+            <p class="subtitle">Stay updated with the latest announcements</p>
+        </header>
+
+        <main class="main">
+            <div id="announcements" class="announcements-container">
+                <!-- Mock announcements for demo -->
+                <div class="announcement-card latest priority-high">
+                    <div class="announcement-header">
+                        <h2 class="announcement-title">
+                            Important System Maintenance Scheduled
+                            <span class="latest-badge">Latest</span>
+                        </h2>
+                        <span class="announcement-date">Dec 28, 2024</span>
+                    </div>
+                    <div class="announcement-content">
+                        <p>We will be performing scheduled system maintenance on January 2nd, 2025 from 2:00 AM to 6:00 AM EST. During this time, some services may be temporarily unavailable.</p>
+                        <p>Please plan accordingly and ensure all critical work is completed before the maintenance window.</p>
+                    </div>
+                </div>
+
+                <div class="announcement-card priority-medium">
+                    <div class="announcement-header">
+                        <h2 class="announcement-title">New STR Guidelines Released</h2>
+                        <span class="announcement-date">Dec 25, 2024</span>
+                    </div>
+                    <div class="announcement-content">
+                        <p>The updated STR guidelines for 2025 have been published. All team members should review the new protocols and procedures.</p>
+                        <p>Key changes include updated reporting requirements and new safety protocols.</p>
+                    </div>
+                </div>
+
+                <div class="announcement-card priority-low">
+                    <div class="announcement-header">
+                        <h2 class="announcement-title">Holiday Schedule Update</h2>
+                        <span class="announcement-date">Dec 20, 2024</span>
+                    </div>
+                    <div class="announcement-content">
+                        <p>Please note the updated holiday schedule for the end of December. The office will be closed from December 24th through January 1st.</p>
+                        <p>Emergency contacts will remain available during this period.</p>
+                    </div>
+                </div>
+
+                <div class="announcement-card priority-medium">
+                    <div class="announcement-header">
+                        <h2 class="announcement-title">Training Session: New Safety Protocols</h2>
+                        <span class="announcement-date">Dec 15, 2024</span>
+                    </div>
+                    <div class="announcement-content">
+                        <p>Mandatory training session on new safety protocols will be held on January 10th, 2025 at 10:00 AM.</p>
+                        <p>Please confirm your attendance by replying to this announcement.</p>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <footer class="footer">
+            <p>Data sourced from STR Google Sheets | Last updated: <span id="last-updated">Dec 28, 2024, 3:45 PM EST</span></p>
+        </footer>
+    </div>
+</body>
+</html>

@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>STR Announcements</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <h1>STR Announcements</h1>
+            <p class="subtitle">Stay updated with the latest announcements</p>
+        </header>
+
+        <main class="main">
+            <div id="loading" class="loading">
+                <div class="spinner"></div>
+                <p>Loading announcements...</p>
+            </div>
+
+            <div id="error" class="error hidden">
+                <h3>Unable to load announcements</h3>
+                <p id="error-message"></p>
+                <button onclick="loadAnnouncements()" class="retry-btn">Try Again</button>
+            </div>
+
+            <div id="announcements" class="announcements-container hidden">
+                <!-- Announcements will be loaded here -->
+            </div>
+        </main>
+
+        <footer class="footer">
+            <p>Data sourced from STR Google Sheets | Last updated: <span id="last-updated"></span></p>
+        </footer>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>

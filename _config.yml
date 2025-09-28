@@ -1,0 +1,16 @@
+# GitHub Pages configuration
+title: STR Announcements
+description: Stay updated with the latest STR announcements
+url: "https://allanwei.github.io"
+baseurl: "/rams.github.io"
+
+# Build settings
+plugins:
+  - jekyll-sitemap
+  - jekyll-seo-tag
+
+# Exclude files from build
+exclude:
+  - README.md
+  - .gitignore
+  - .git/
