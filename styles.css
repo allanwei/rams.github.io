@@ -1,0 +1,258 @@
+/* Reset and base styles */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    line-height: 1.6;
+    color: #333;
+    background-color: #f8fafc;
+}
+
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Header styles */
+.header {
+    text-align: center;
+    margin-bottom: 40px;
+    padding: 40px 0;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border-radius: 20px;
+    color: white;
+    box-shadow: 0 10px 30px rgba(102, 126, 234, 0.3);
+}
+
+.header h1 {
+    font-size: 2.5rem;
+    font-weight: 700;
+    margin-bottom: 10px;
+}
+
+.subtitle {
+    font-size: 1.1rem;
+    font-weight: 300;
+    opacity: 0.9;
+}
+
+/* Main content */
+.main {
+    flex: 1;
+}
+
+/* Loading state */
+.loading {
+    text-align: center;
+    padding: 60px 20px;
+}
+
+.spinner {
+    width: 40px;
+    height: 40px;
+    border: 4px solid #e2e8f0;
+    border-top: 4px solid #667eea;
+    border-radius: 50%;
+    margin: 0 auto 20px;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* Error state */
+.error {
+    text-align: center;
+    padding: 60px 20px;
+    background: #fee2e2;
+    border-radius: 12px;
+    border: 1px solid #fecaca;
+}
+
+.error h3 {
+    color: #dc2626;
+    margin-bottom: 10px;
+    font-size: 1.5rem;
+}
+
+.error p {
+    color: #991b1b;
+    margin-bottom: 20px;
+}
+
+.retry-btn {
+    background: #dc2626;
+    color: white;
+    border: none;
+    padding: 12px 24px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 500;
+    transition: background-color 0.2s;
+}
+
+.retry-btn:hover {
+    background: #b91c1c;
+}
+
+/* Announcements container */
+.announcements-container {
+    display: grid;
+    gap: 20px;
+}
+
+/* Individual announcement card */
+.announcement-card {
+    background: white;
+    border-radius: 12px;
+    padding: 24px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+    border: 1px solid #e2e8f0;
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.announcement-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+}
+
+.announcement-card.latest {
+    border-left: 4px solid #667eea;
+    background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+}
+
+.announcement-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 16px;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.announcement-title {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: #1e293b;
+    margin: 0;
+    flex: 1;
+    min-width: 200px;
+}
+
+.announcement-date {
+    font-size: 0.875rem;
+    color: #64748b;
+    font-weight: 500;
+    background: #f1f5f9;
+    padding: 4px 12px;
+    border-radius: 20px;
+    white-space: nowrap;
+}
+
+.announcement-content {
+    color: #475569;
+    font-size: 1rem;
+    line-height: 1.7;
+}
+
+.announcement-content p {
+    margin-bottom: 12px;
+}
+
+.announcement-content p:last-child {
+    margin-bottom: 0;
+}
+
+/* Priority indicators */
+.priority-high {
+    border-left-color: #dc2626 !important;
+}
+
+.priority-medium {
+    border-left-color: #f59e0b !important;
+}
+
+.priority-low {
+    border-left-color: #10b981 !important;
+}
+
+/* Latest announcement badge */
+.latest-badge {
+    display: inline-block;
+    background: #667eea;
+    color: white;
+    font-size: 0.75rem;
+    font-weight: 500;
+    padding: 4px 8px;
+    border-radius: 12px;
+    margin-left: 10px;
+}
+
+/* Footer */
+.footer {
+    text-align: center;
+    padding: 30px 0;
+    margin-top: 40px;
+    font-size: 0.875rem;
+    color: #64748b;
+    border-top: 1px solid #e2e8f0;
+}
+
+/* Utility classes */
+.hidden {
+    display: none !important;
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+    .container {
+        padding: 15px;
+    }
+    
+    .header {
+        padding: 30px 20px;
+        margin-bottom: 30px;
+    }
+    
+    .header h1 {
+        font-size: 2rem;
+    }
+    
+    .announcement-card {
+        padding: 20px;
+    }
+    
+    .announcement-header {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+    
+    .announcement-title {
+        margin-bottom: 8px;
+        min-width: auto;
+    }
+}
+
+@media (max-width: 480px) {
+    .header h1 {
+        font-size: 1.75rem;
+    }
+    
+    .announcement-card {
+        padding: 16px;
+    }
+    
+    .announcement-title {
+        font-size: 1.1rem;
+    }
+}
