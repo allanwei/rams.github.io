@@ -1,9 +1,11 @@
 // Google Sheets configuration
 const SPREADSHEET_ID = '1ls3lAzoKo3OTLW5JOCwc21LVKx-p0PCFeidrfXkptME';
-const SHEET_ID = '1361346904';
 
-// API endpoint for CSV export
-const SHEETS_CSV_URL = `https://docs.google.com/spreadsheets/d/${SPREADSHEET_ID}/export?format=csv&gid=${SHEET_ID}`;
+// Sheet names for each month
+const SHEET_NAMES = [
+    'September', 'October', 'November', 'December', 'January',
+    'February', 'March', 'April', 'May', 'June'
+];
 
 // DOM elements
 const loadingElement = document.getElementById('loading');
@@ -22,122 +24,97 @@ async function loadAnnouncements() {
     showLoading();
     
     try {
-        // Try to fetch from Google Sheets first
-        const response = await fetch(SHEETS_CSV_URL, {
-            mode: 'cors',
-            headers: {
-                'Accept': 'text/csv',
+        const allAnnouncements = [];
+        
+        // Fetch announcements from all specified sheets
+        for (const sheetName of SHEET_NAMES) {
+            const jsonUrl = `https://docs.google.com/spreadsheets/d/${SPREADSHEET_ID}/gviz/tq?tqx=out:json&sheet=${sheetName}`;
+
+            try {
+                const response = await fetch(jsonUrl);
+                if (!response.ok) {
+                    console.warn(`Could not fetch sheet "${sheetName}". Status: ${response.status}`);
+                    continue;
+                }
+
+                const jsonpText = await response.text();
+                const announcements = parseJSON(jsonpText);
+                allAnnouncements.push(...announcements);
+
+            } catch (sheetError) {
+                console.error(`Error fetching or parsing sheet "${sheetName}":`, sheetError);
             }
-        });
-        
-        if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
         }
         
-        const csvText = await response.text();
-        const announcements = parseCSV(csvText);
-        
-        if (announcements.length === 0) {
-            throw new Error('No announcements found in the spreadsheet.');
+        if (allAnnouncements.length === 0) {
+            throw new Error('No announcements found in any of the sheets.');
         }
         
-        displayAnnouncements(announcements);
+        // Sort all announcements by date (latest first)
+        allAnnouncements.sort((a, b) => b.parsedDate - a.parsedDate);
+
+        displayAnnouncements(allAnnouncements);
         updateLastUpdatedTime();
         
     } catch (error) {
         console.error('Error loading announcements:', error);
         
-        // Show CORS-specific error message with helpful information
-        if (error.message.includes('Failed to fetch') || error.message.includes('CORS')) {
-            showCORSError();
-        } else {
-            showError(error.message);
-        }
+        // Show a generic but helpful error message
+        showError('Could not load announcements. Please check the spreadsheet configuration and network connection.');
     }
 }
 
-// Function to parse CSV data
-function parseCSV(csvText) {
-    const lines = csvText.trim().split('\n');
-    
-    if (lines.length < 2) {
+// Function to parse JSONP data from gviz endpoint
+function parseJSON(jsonpText) {
+    // Extract JSON from the JSONP wrapper
+    const jsonString = jsonpText.match(/google\.visualization\.Query\.setResponse\((.*)\)/s)[1];
+    const data = JSON.parse(jsonString);
+
+    if (!data.table || !data.table.rows || data.table.rows.length === 0) {
         return [];
     }
-    
-    // Parse header row to get column indices
-    const headers = parseCSVRow(lines[0]);
-    const dateIndex = findColumnIndex(headers, ['date', 'timestamp', 'created', 'published']);
-    const titleIndex = findColumnIndex(headers, ['title', 'subject', 'announcement', 'heading']);
-    const contentIndex = findColumnIndex(headers, ['content', 'description', 'message', 'body', 'details']);
-    const priorityIndex = findColumnIndex(headers, ['priority', 'importance', 'level']);
-    
+
+    const cols = data.table.cols;
+    const rows = data.table.rows;
+
+    // Find column indices dynamically
+    const dateIndex = cols.findIndex(c => c.label.toLowerCase().includes('date'));
+    const contentIndex = cols.findIndex(c => c.label.toLowerCase().includes('description'));
+    let titleIndex = cols.findIndex(c => c.label.toLowerCase().includes('club or activity'));
+    if (titleIndex === -1) {
+        titleIndex = cols.findIndex(c => c.label.toLowerCase().includes('teacher'));
+    }
+
+    if (dateIndex === -1 || contentIndex === -1 || titleIndex === -1) {
+        return []; // Essential columns not found
+    }
+
     const announcements = [];
-    
-    // Parse data rows
-    for (let i = 1; i < lines.length; i++) {
-        const row = parseCSVRow(lines[i]);
-        
-        if (row.length === 0 || !row[titleIndex] || !row[contentIndex]) {
-            continue; // Skip empty or incomplete rows
+    rows.forEach((row, i) => {
+        if (!row.c || !row.c[dateIndex] || !row.c[contentIndex]) {
+            return;
         }
         
+        const dateVal = row.c[dateIndex] ? (row.c[dateIndex].f || row.c[dateIndex].v) : new Date().toISOString();
+        const titleVal = row.c[titleIndex] ? (row.c[titleIndex].v || 'Announcement') : 'Announcement';
+        const contentVal = row.c[contentIndex] ? (row.c[contentIndex].v || '') : '';
+
+        // Skip empty rows
+        if (!contentVal) return;
+
         const announcement = {
-            date: row[dateIndex] || new Date().toISOString(),
-            title: row[titleIndex].trim(),
-            content: row[contentIndex].trim(),
-            priority: row[priorityIndex] ? row[priorityIndex].toLowerCase().trim() : 'medium',
+            date: dateVal,
+            title: titleVal.trim(),
+            content: contentVal.trim(),
+            priority: 'medium',
             id: `announcement-${i}-${Date.now()}`
         };
-        
-        // Parse and validate date
+
         announcement.parsedDate = parseDate(announcement.date);
-        
         announcements.push(announcement);
-    }
-    
-    // Sort announcements by date (latest first)
-    announcements.sort((a, b) => b.parsedDate - a.parsedDate);
-    
+    });
+
     return announcements;
-}
-
-// Function to parse a single CSV row, handling quoted fields
-function parseCSVRow(row) {
-    const result = [];
-    let currentField = '';
-    let inQuotes = false;
-    
-    for (let i = 0; i < row.length; i++) {
-        const char = row[i];
-        
-        if (char === '"') {
-            if (inQuotes && row[i + 1] === '"') {
-                currentField += '"';
-                i++; // Skip next quote
-            } else {
-                inQuotes = !inQuotes;
-            }
-        } else if (char === ',' && !inQuotes) {
-            result.push(currentField);
-            currentField = '';
-        } else {
-            currentField += char;
-        }
-    }
-    
-    result.push(currentField);
-    return result;
-}
-
-// Function to find column index by possible names
-function findColumnIndex(headers, possibleNames) {
-    for (let i = 0; i < headers.length; i++) {
-        const header = headers[i].toLowerCase().trim();
-        if (possibleNames.some(name => header.includes(name))) {
-            return i;
-        }
-    }
-    return 0; // Default to first column if not found
 }
 
 // Function to parse various date formats
