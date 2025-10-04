@@ -77,12 +77,17 @@ function parseJSON(jsonpText) {
     const cols = data.table.cols;
     const rows = data.table.rows;
 
-    // Find column indices dynamically
-    const dateIndex = cols.findIndex(c => c.label.toLowerCase().includes('date'));
-    const contentIndex = cols.findIndex(c => c.label.toLowerCase().includes('description'));
-    let titleIndex = cols.findIndex(c => c.label.toLowerCase().includes('club or activity'));
+    // Find column indices dynamically, trimming labels to handle inconsistencies
+    const dateIndex = cols.findIndex(c => c.label.trim().toLowerCase().includes('date'));
+
+    let contentIndex = cols.findIndex(c => c.label.trim().toLowerCase().includes('description'));
+    if (contentIndex === -1) {
+        contentIndex = cols.findIndex(c => c.label.trim().toLowerCase().includes('announcements'));
+    }
+
+    let titleIndex = cols.findIndex(c => c.label.trim().toLowerCase().includes('club or activity'));
     if (titleIndex === -1) {
-        titleIndex = cols.findIndex(c => c.label.toLowerCase().includes('teacher'));
+        titleIndex = cols.findIndex(c => c.label.trim().toLowerCase().includes('teacher'));
     }
 
     if (dateIndex === -1 || contentIndex === -1 || titleIndex === -1) {
